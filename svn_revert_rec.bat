@@ -20,21 +20,29 @@ GOTO run
 
 :showhelp
 echo svn_revert_rec path [/delunversioned] [/delignored]
-exit /B
+GOTO end
 
 :run
+
+pushd
+
+cd /d %1%
+IF ERRORLEVEL 1 (
+echo cannot cd to %1%
+GOTO end
+)
 
 REM --- check that svn & TortoiseSVN are installed
 where /q svn.exe
 IF ERRORLEVEL 1 (
 echo svn.exe not in path !
-exit /B
+GOTO end
 )
 
 where /q TortoiseProc.exe
 IF ERRORLEVEL 1 (
 echo TortoiseProc.exe not in path !
-exit /B
+GOTO end
 )
 
 REM --- first, let's revert all subfolders, one by one
@@ -61,3 +69,6 @@ IF ERRORLEVEL 1 (
 REM --- do a final cleanup, with optional /delunversioned /delignored
 echo Cleanup (extra options: %2 %3)
 TortoiseProc.exe /command:cleanup /path:. /noui /externals %2 %3
+
+:end
+popd
